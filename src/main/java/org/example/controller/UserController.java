@@ -3,6 +3,7 @@ package org.example.controller;
 import jakarta.validation.Valid;
 import org.example.dto.UserCreateRequestDTO;
 import org.example.dto.UserResponseDTO;
+import org.example.dto.UserUpdateRequestDTO;
 import org.springframework.web.bind.annotation.*;
 import org.example.service.UserService;
 
@@ -31,6 +32,11 @@ public class UserController {
     @PostMapping
     public UserResponseDTO create(@RequestBody @Valid UserCreateRequestDTO req) {
         return service.create(req);
+    }
+
+    @PostMapping("/{id}")
+    public UserResponseDTO update(@RequestBody @Valid UserUpdateRequestDTO req) {
+        return service.update(req);
     }
 
     @DeleteMapping("/{id}")

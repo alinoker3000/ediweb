@@ -2,6 +2,7 @@ package org.example.service;
 
 import org.example.dto.UserCreateRequestDTO;
 import org.example.dto.UserResponseDTO;
+import org.example.dto.UserUpdateRequestDTO;
 import org.example.entity.Organization;
 import org.example.entity.User;
 import org.example.repository.OrganizationRepository;
@@ -51,6 +52,43 @@ public class UserService {
         user.setOrganization(org);
 
         user.setPassword(passwordEncoder.encode(req.getPassword()));
+
+        return toResponse(userRepo.save(user));
+    }
+
+    public UserResponseDTO update(UserUpdateRequestDTO req) {
+
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (req.getFirstName() != null) {
+            user.setFirstName(req.getFirstName());
+        }
+
+        if (req.getLastName() != null) {
+            user.setLastName(req.getLastName());
+        }
+
+        if (req.getLogin() != null) {
+            user.setLogin(req.getLogin());
+        }
+
+        if (req.getAdmin() != null) {
+            user.setAdmin(req.getAdmin());
+        }
+
+        if (req.getOrganizationId() != null) {
+            Organization org = orgRepo.findById(req.getOrganizationId())
+                    .orElseThrow(() -> new RuntimeException("Organization not found"));
+            user.setOrganization(org);
+        }
+
+        if (req.getPassword() != null) {
+            if (req.getPassword().isBlank()) {
+                throw new IllegalArgumentException("Password cannot be empty");
+            }
+            user.setPassword(passwordEncoder.encode(req.getPassword()));
+        }
 
         return toResponse(userRepo.save(user));
     }
