@@ -56,7 +56,7 @@ public class UserService {
         return toResponse(userRepo.save(user));
     }
 
-    public UserResponseDTO update(UserUpdateRequestDTO req) {
+    public UserResponseDTO update(Long id, UserUpdateRequestDTO req) {
 
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));

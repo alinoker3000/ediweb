@@ -34,9 +34,10 @@ public class UserController {
         return service.create(req);
     }
 
-    @PostMapping("/{id}")
-    public UserResponseDTO update(@RequestBody @Valid UserUpdateRequestDTO req) {
-        return service.update(req);
+    @PutMapping("/{id}")
+    public UserResponseDTO update(@PathVariable Long id,
+                                  @RequestBody @Valid UserUpdateRequestDTO req) {
+        return service.update(id, req);
     }
 
     @DeleteMapping("/{id}")
