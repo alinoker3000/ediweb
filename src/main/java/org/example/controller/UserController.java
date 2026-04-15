@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import jakarta.validation.Valid;
 import org.example.dto.UserCreateRequestDTO;
 import org.example.dto.UserResponseDTO;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +29,8 @@ public class UserController {
     }
 
     @PostMapping
-    public UserResponseDTO create(@RequestBody UserCreateRequestDTO user) {
-        return service.create(user);
+    public UserResponseDTO create(@RequestBody @Valid UserCreateRequestDTO req) {
+        return service.create(req);
     }
 
     @DeleteMapping("/{id}")
