@@ -2,10 +2,9 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.dto.OrganizationResponseDTO;
+import org.example.dto.OrganizationCreateRequestDTO;
 import org.example.dto.OrganizationUpdateRequestDTO;
-import org.example.dto.UserResponseDTO;
-import org.example.entity.Organization;
+import org.example.dto.OrganizationResponseDTO;
 import org.example.service.OrganizationService;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,14 +28,14 @@ public class OrganizationController {
     }
 
     @PostMapping
-    public OrganizationResponseDTO create(@RequestBody @Valid Organization org) {
-        return service.create(org);
+    public OrganizationResponseDTO create(@RequestBody @Valid OrganizationCreateRequestDTO dto) {
+        return service.create(dto);
     }
 
-    @PutMapping("/{id}")
-    public OrganizationResponseDTO update(@PathVariable Long id,
-                                          @RequestBody @Valid OrganizationUpdateRequestDTO req) {
-        return service.update(id, req);
+    @PatchMapping("/{id}")
+    public OrganizationResponseDTO patch(@PathVariable Long id,
+                                         @RequestBody @Valid OrganizationUpdateRequestDTO dto) {
+        return service.update(id, dto);
     }
 
     @DeleteMapping("/{id}")

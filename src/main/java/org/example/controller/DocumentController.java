@@ -2,9 +2,7 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.dto.DocumentCreateRequestDTO;
-import org.example.dto.DocumentResponseDTO;
-import org.example.dto.DocumentUpdateRequestDTO;
+import org.example.dto.*;
 import org.example.mapper.DocumentMapper;
 import org.example.service.DocumentService;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +31,12 @@ public class DocumentController {
         return service.create(req);
     }
 
-    @PutMapping("/{id}")
-    public DocumentResponseDTO update(@PathVariable Long id,
-                                      @RequestBody @Valid DocumentUpdateRequestDTO req) {
-        return service.update(id, req);
+    @PatchMapping("/{id}")
+    public DocumentResponseDTO update(
+            @PathVariable Long id,
+            @Valid @RequestBody DocumentUpdateRequestDTO dto
+    ) {
+        return service.update(id, dto);
     }
 
     @DeleteMapping("/{id}")

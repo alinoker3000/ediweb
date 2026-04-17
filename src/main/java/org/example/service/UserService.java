@@ -41,13 +41,9 @@ public class UserService {
         Organization org = orgRepo.findById(req.getOrganizationId())
                 .orElseThrow(() -> new RuntimeException("Organization not found"));
 
-        User user = new User();
-        user.setFirstName(req.getFirstName());
-        user.setLastName(req.getLastName());
-        user.setLogin(req.getLogin());
-        user.setAdmin(req.isAdmin());
-        user.setOrganization(org);
+        User user = userMapper.toEntity(req);
 
+        user.setOrganization(org);
         user.setPassword(passwordEncoder.encode(req.getPassword()));
 
         return userMapper.toResponse(userRepo.save(user));
@@ -58,21 +54,7 @@ public class UserService {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (req.getFirstName() != null) {
-            user.setFirstName(req.getFirstName());
-        }
-
-        if (req.getLastName() != null) {
-            user.setLastName(req.getLastName());
-        }
-
-        if (req.getLogin() != null) {
-            user.setLogin(req.getLogin());
-        }
-
-        if (req.getAdmin() != null) {
-            user.setAdmin(req.getAdmin());
-        }
+        userMapper.update(req, user);
 
         if (req.getOrganizationId() != null) {
             Organization org = orgRepo.findById(req.getOrganizationId())

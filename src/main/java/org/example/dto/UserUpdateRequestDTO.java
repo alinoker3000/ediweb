@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class UserUpdateRequestDTO {
 
-    @Size(min = 1, message = "First name cannot be empty")
+    @Size( message = "First name cannot be empty")
     private String firstName;
 
     @Size(min = 1, message = "Last name cannot be empty")
@@ -20,7 +20,7 @@ public class UserUpdateRequestDTO {
     @Size(min = 4, max = 100, message = "Password must be at least 4 characters long")
     private String password;
 
-    private Boolean admin;
+    private boolean admin;
 
     private Long organizationId;
 

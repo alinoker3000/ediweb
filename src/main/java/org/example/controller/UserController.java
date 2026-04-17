@@ -32,10 +32,12 @@ public class UserController {
         return service.create(req);
     }
 
-    @PutMapping("/{id}")
-    public UserResponseDTO update(@PathVariable Long id,
-                                  @RequestBody @Valid UserUpdateRequestDTO req) {
-        return service.update(id, req);
+    @PatchMapping("/{id}")
+    public UserResponseDTO update(
+            @PathVariable Long id,
+            @Valid @RequestBody UserUpdateRequestDTO dto
+    ) {
+        return service.update(id, dto);
     }
 
     @DeleteMapping("/{id}")

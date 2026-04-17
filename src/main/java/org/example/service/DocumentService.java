@@ -2,11 +2,12 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dto.DocumentCreateRequestDTO;
-import org.example.dto.DocumentResponseDTO;
 import org.example.dto.DocumentUpdateRequestDTO;
+import org.example.dto.DocumentResponseDTO;
 import org.example.entity.Document;
 import org.example.entity.DocumentHeader;
 import org.example.entity.Organization;
+import org.example.mapper.DocumentHeaderMapper;
 import org.example.mapper.DocumentMapper;
 import org.example.repository.DocumentRepository;
 import org.example.repository.OrganizationRepository;
@@ -21,6 +22,7 @@ public class DocumentService {
     private final DocumentRepository documentRepo;
     private final OrganizationRepository orgRepo;
     private final DocumentMapper mapper;
+    private final DocumentHeaderMapper headerMapper;
 
     public List<DocumentResponseDTO> findAll() {
         return documentRepo.findAll()
@@ -43,16 +45,13 @@ public class DocumentService {
         Organization receiver = orgRepo.findById(req.getReceiverId())
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
 
-        DocumentHeader header = new DocumentHeader();
-        header.setNumber(req.getNumber());
-        header.setType(req.getType());
-        header.setFormat(req.getFormat());
+        Document document = mapper.toEntity(req);
+
+        DocumentHeader header = headerMapper.toEntity(req);
         header.setSender(sender);
         header.setReceiver(receiver);
 
-        Document document = new Document();
         document.setHeader(header);
-        document.setData(req.getData());
 
         return mapper.toResponse(documentRepo.save(document));
     }
@@ -62,19 +61,15 @@ public class DocumentService {
         Document document = documentRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
+        mapper.update(req, document);
+
         DocumentHeader header = document.getHeader();
-
-        if (req.getNumber() != null) {
-            header.setNumber(req.getNumber());
+        if (header == null) {
+            header = new DocumentHeader();
+            document.setHeader(header);
         }
 
-        if (req.getType() != null) {
-            header.setType(req.getType());
-        }
-
-        if (req.getFormat() != null) {
-            header.setFormat(req.getFormat());
-        }
+        headerMapper.update(req, header);
 
         if (req.getSenderId() != null) {
             Organization sender = orgRepo.findById(req.getSenderId())
@@ -86,10 +81,6 @@ public class DocumentService {
             Organization receiver = orgRepo.findById(req.getReceiverId())
                     .orElseThrow(() -> new RuntimeException("Receiver not found"));
             header.setReceiver(receiver);
-        }
-
-        if (req.getData() != null) {
-            document.setData(req.getData());
         }
 
         return mapper.toResponse(documentRepo.save(document));
