@@ -1,32 +1,31 @@
 package org.example.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.dto.OrganizationResponseDTO;
 import org.example.dto.OrganizationUpdateRequestDTO;
-import org.example.dto.UserResponseDTO;
 import org.example.entity.Organization;
+import org.example.mapper.OrganizationMapper;
 import org.example.repository.OrganizationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OrganizationService {
 
     private final OrganizationRepository repo;
-
-    public OrganizationService(OrganizationRepository repo) {
-        this.repo = repo;
-    }
+    private final OrganizationMapper mapper;
 
     public List<OrganizationResponseDTO> findAll() {
         return repo.findAll().stream()
-                .map(this::toResponse)
+                .map(mapper::toResponse)
                 .toList();
     }
 
     public OrganizationResponseDTO findById(Long id) {
         return repo.findById(id)
-                .map(this::toResponse)
+                .map(mapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("Organization not found"));
     }
 
@@ -36,7 +35,7 @@ public class OrganizationService {
         org.setName(req.getName());
         org.setGln(req.getGln());
 
-        return toResponse(repo.save(org));
+        return mapper.toResponse(repo.save(org));
     }
 
     public OrganizationResponseDTO update(Long id, OrganizationUpdateRequestDTO req) {
@@ -61,7 +60,7 @@ public class OrganizationService {
             org.setGln(req.getGln());
         }
 
-        return toResponse(repo.save(org));
+        return mapper.toResponse(repo.save(org));
     }
 
     public void delete(Long id) {
@@ -69,13 +68,5 @@ public class OrganizationService {
             throw new RuntimeException("Organization not found");
         }
         repo.deleteById(id);
-    }
-
-    private OrganizationResponseDTO toResponse(Organization org) {
-        OrganizationResponseDTO dto = new OrganizationResponseDTO();
-        dto.setId(org.getId());
-        dto.setName(org.getName());
-        dto.setGln(org.getGln());
-        return dto;
     }
 }

@@ -1,11 +1,13 @@
 package org.example.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.dto.DocumentCreateRequestDTO;
 import org.example.dto.DocumentResponseDTO;
 import org.example.dto.DocumentUpdateRequestDTO;
 import org.example.entity.Document;
 import org.example.entity.DocumentHeader;
 import org.example.entity.Organization;
+import org.example.mapper.DocumentMapper;
 import org.example.repository.DocumentRepository;
 import org.example.repository.OrganizationRepository;
 import org.springframework.stereotype.Service;
@@ -13,27 +15,23 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DocumentService {
 
     private final DocumentRepository documentRepo;
     private final OrganizationRepository orgRepo;
-
-    public DocumentService(DocumentRepository documentRepo,
-                           OrganizationRepository orgRepo) {
-        this.documentRepo = documentRepo;
-        this.orgRepo = orgRepo;
-    }
+    private final DocumentMapper mapper;
 
     public List<DocumentResponseDTO> findAll() {
         return documentRepo.findAll()
                 .stream()
-                .map(this::toResponse)
+                .map(mapper::toResponse)
                 .toList();
     }
 
     public DocumentResponseDTO findById(Long id) {
         return documentRepo.findById(id)
-                .map(this::toResponse)
+                .map(mapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
     }
 
@@ -56,7 +54,7 @@ public class DocumentService {
         document.setHeader(header);
         document.setData(req.getData());
 
-        return toResponse(documentRepo.save(document));
+        return mapper.toResponse(documentRepo.save(document));
     }
 
     public DocumentResponseDTO update(Long id, DocumentUpdateRequestDTO req) {
@@ -94,7 +92,7 @@ public class DocumentService {
             document.setData(req.getData());
         }
 
-        return toResponse(documentRepo.save(document));
+        return mapper.toResponse(documentRepo.save(document));
     }
 
     public void delete(Long id) {
@@ -102,33 +100,5 @@ public class DocumentService {
             throw new RuntimeException("Document not found");
         }
         documentRepo.deleteById(id);
-    }
-
-    private DocumentResponseDTO toResponse(Document doc) {
-
-        DocumentResponseDTO dto = new DocumentResponseDTO();
-
-        dto.setId(doc.getId());
-        dto.setData(doc.getData());
-
-        if (doc.getHeader() != null) {
-            dto.setNumber(doc.getHeader().getNumber());
-            dto.setType(doc.getHeader().getType());
-            dto.setFormat(doc.getHeader().getFormat());
-
-            dto.setSenderId(
-                    doc.getHeader().getSender() != null
-                            ? doc.getHeader().getSender().getId()
-                            : null
-            );
-
-            dto.setReceiverId(
-                    doc.getHeader().getReceiver() != null
-                            ? doc.getHeader().getReceiver().getId()
-                            : null
-            );
-        }
-
-        return dto;
     }
 }

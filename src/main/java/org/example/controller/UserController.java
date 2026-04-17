@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.dto.UserCreateRequestDTO;
 import org.example.dto.UserResponseDTO;
 import org.example.dto.UserUpdateRequestDTO;
@@ -11,13 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService service;
-
-    public UserController(UserService service) {
-        this.service = service;
-    }
 
     @GetMapping
     public List<UserResponseDTO> getAll() {

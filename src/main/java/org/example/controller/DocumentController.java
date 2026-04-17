@@ -1,9 +1,11 @@
 package org.example.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.dto.DocumentCreateRequestDTO;
 import org.example.dto.DocumentResponseDTO;
 import org.example.dto.DocumentUpdateRequestDTO;
+import org.example.mapper.DocumentMapper;
 import org.example.service.DocumentService;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,13 +13,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/documents")
+@RequiredArgsConstructor
 public class DocumentController {
 
     private final DocumentService service;
-
-    public DocumentController(DocumentService service) {
-        this.service = service;
-    }
 
     @GetMapping
     public List<DocumentResponseDTO> getAll() {
