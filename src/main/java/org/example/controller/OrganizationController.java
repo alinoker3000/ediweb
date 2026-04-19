@@ -2,9 +2,9 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.dto.OrganizationCreateRequestDTO;
-import org.example.dto.OrganizationUpdateRequestDTO;
-import org.example.dto.OrganizationResponseDTO;
+import org.example.dto.organization.OrganizationCreateRequestDTO;
+import org.example.dto.organization.OrganizationUpdateRequestDTO;
+import org.example.dto.organization.OrganizationResponseDTO;
 import org.example.service.OrganizationService;
 import org.springframework.web.bind.annotation.*;
 

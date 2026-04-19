@@ -1,8 +1,8 @@
 package org.example.mapper;
 
-import org.example.dto.DocumentCreateRequestDTO;
-import org.example.dto.DocumentUpdateRequestDTO;
-import org.example.dto.DocumentResponseDTO;
+import org.example.dto.document.DocumentCreateRequestDTO;
+import org.example.dto.document.DocumentUpdateRequestDTO;
+import org.example.dto.document.DocumentResponseDTO;
 import org.example.entity.Document;
 import org.mapstruct.*;
 

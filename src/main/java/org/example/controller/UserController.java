@@ -2,9 +2,9 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.dto.UserCreateRequestDTO;
-import org.example.dto.UserResponseDTO;
-import org.example.dto.UserUpdateRequestDTO;
+import org.example.dto.user.UserCreateRequestDTO;
+import org.example.dto.user.UserResponseDTO;
+import org.example.dto.user.UserUpdateRequestDTO;
 import org.springframework.web.bind.annotation.*;
 import org.example.service.UserService;
 

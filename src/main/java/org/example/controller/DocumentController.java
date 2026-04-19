@@ -2,8 +2,9 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.dto.*;
-import org.example.mapper.DocumentMapper;
+import org.example.dto.document.DocumentCreateRequestDTO;
+import org.example.dto.document.DocumentResponseDTO;
+import org.example.dto.document.DocumentUpdateRequestDTO;
 import org.example.service.DocumentService;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,14 +1,15 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.dto.UserCreateRequestDTO;
-import org.example.dto.UserResponseDTO;
-import org.example.dto.UserUpdateRequestDTO;
+import org.example.dto.user.UserCreateRequestDTO;
+import org.example.dto.user.UserResponseDTO;
+import org.example.dto.user.UserUpdateRequestDTO;
 import org.example.entity.Organization;
 import org.example.entity.User;
 import org.example.mapper.UserMapper;
 import org.example.repository.OrganizationRepository;
 import org.example.repository.UserRepository;
+import org.example.security.CurrentUserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,23 +23,51 @@ public class UserService {
     private final UserMapper userMapper;
     private final OrganizationRepository orgRepo;
     private final PasswordEncoder passwordEncoder;
+    private final CurrentUserService currentUser;
+
+    private boolean sameOrg(User user) {
+        return user.getOrganization().getId().equals(currentUser.companyId());
+    }
 
     public List<UserResponseDTO> findAll() {
+
+        if (currentUser.isAdmin()) {
+            return userRepo.findAll()
+                    .stream()
+                    .map(userMapper::toResponse)
+                    .toList();
+        }
+
         return userRepo.findAll()
                 .stream()
+                .filter(this::sameOrg)
                 .map(userMapper::toResponse)
                 .toList();
     }
 
     public UserResponseDTO findById(Long id) {
-        return userRepo.findById(id)
-                .map(userMapper::toResponse)
+
+        User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (currentUser.isAdmin()) {
+            return userMapper.toResponse(user);
+        }
+
+        if (!user.getOrganization().getId().equals(currentUser.companyId())) {
+            throw new RuntimeException("Access denied");
+        }
+
+        return userMapper.toResponse(user);
     }
 
     public UserResponseDTO create(UserCreateRequestDTO req) {
 
-        Organization org = orgRepo.findById(req.getOrganizationId())
+        if (!currentUser.isAdmin()) {
+            throw new RuntimeException("Only admin can create users");
+        }
+
+        Organization org = orgRepo.findById(currentUser.companyId())
                 .orElseThrow(() -> new RuntimeException("Organization not found"));
 
         User user = userMapper.toEntity(req);
@@ -54,18 +83,15 @@ public class UserService {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        userMapper.update(req, user);
-
-        if (req.getOrganizationId() != null) {
-            Organization org = orgRepo.findById(req.getOrganizationId())
-                    .orElseThrow(() -> new RuntimeException("Organization not found"));
-            user.setOrganization(org);
+        if (!currentUser.isAdmin()) {
+            if (!user.getId().equals(currentUser.userId())) {
+                throw new RuntimeException("Access denied");
+            }
         }
 
-        if (req.getPassword() != null) {
-            if (req.getPassword().isBlank()) {
-                throw new IllegalArgumentException("Password cannot be empty");
-            }
+        userMapper.update(req, user);
+
+        if (req.getPassword() != null && !req.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(req.getPassword()));
         }
 
@@ -73,6 +99,18 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        userRepo.deleteById(id);
+
+        if (!currentUser.isAdmin()) {
+            throw new RuntimeException("Only admin can delete users");
+        }
+
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.getOrganization().getId().equals(currentUser.companyId())) {
+            throw new RuntimeException("Access denied");
+        }
+
+        userRepo.delete(user);
     }
 }

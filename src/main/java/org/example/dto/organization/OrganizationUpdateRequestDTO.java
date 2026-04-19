@@ -1,4 +1,4 @@
-package org.example.dto;
+package org.example.dto.organization;
 
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
