@@ -13,6 +13,7 @@ import org.example.repository.DocumentRepository;
 import org.example.repository.OrganizationRepository;
 import org.example.security.CurrentUserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,41 +27,27 @@ public class DocumentService {
     private final DocumentHeaderMapper headerMapper;
     private final CurrentUserService currentUser;
 
-    private boolean belongsToUserOrg(Document doc) {
-        Long orgId = currentUser.companyId();
-
-        return doc.getHeader().getSender().getId().equals(orgId)
-                || doc.getHeader().getReceiver().getId().equals(orgId);
-    }
-
+    @Transactional(readOnly = true)
     public List<DocumentResponseDTO> findAll() {
-
-        if (currentUser.isAdmin()) {
-            return documentRepo.findAll()
-                    .stream()
-                    .map(mapper::toResponse)
-                    .toList();
-        }
-
-        return documentRepo.findAll()
+        return documentRepo
+                .findAccessibleDocument(
+                        currentUser.companyId(),
+                        currentUser.isAdmin())
                 .stream()
-                .filter(this::belongsToUserOrg)
                 .map(mapper::toResponse)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public DocumentResponseDTO findById(Long id) {
 
         Document doc = documentRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
-        if (!currentUser.isAdmin() && !belongsToUserOrg(doc)) {
-            throw new RuntimeException("Access denied");
-        }
-
         return mapper.toResponse(doc);
     }
 
+    @Transactional
     public DocumentResponseDTO create(DocumentCreateRequestDTO req) {
 
         Organization sender = orgRepo.findById(req.getSenderId())
@@ -68,15 +55,6 @@ public class DocumentService {
 
         Organization receiver = orgRepo.findById(req.getReceiverId())
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
-
-        if (!currentUser.isAdmin()) {
-
-            Long myOrg = currentUser.companyId();
-
-            if (!sender.getId().equals(myOrg) && !receiver.getId().equals(myOrg)) {
-                throw new RuntimeException("Access denied");
-            }
-        }
 
         Document document = mapper.toEntity(req);
 
@@ -89,14 +67,11 @@ public class DocumentService {
         return mapper.toResponse(documentRepo.save(document));
     }
 
+    @Transactional
     public DocumentResponseDTO update(Long id, DocumentUpdateRequestDTO req) {
 
         Document document = documentRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
-
-        if (!currentUser.isAdmin() && !belongsToUserOrg(document)) {
-            throw new RuntimeException("Access denied");
-        }
 
         mapper.update(req, document);
 
@@ -123,14 +98,11 @@ public class DocumentService {
         return mapper.toResponse(documentRepo.save(document));
     }
 
+    @Transactional
     public void delete(Long id) {
 
         Document document = documentRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
-
-        if (!currentUser.isAdmin() && !belongsToUserOrg(document)) {
-            throw new RuntimeException("Access denied");
-        }
 
         documentRepo.delete(document);
     }

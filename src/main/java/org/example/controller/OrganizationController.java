@@ -6,6 +6,7 @@ import org.example.dto.organization.OrganizationCreateRequestDTO;
 import org.example.dto.organization.OrganizationUpdateRequestDTO;
 import org.example.dto.organization.OrganizationResponseDTO;
 import org.example.service.OrganizationService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,22 +24,26 @@ public class OrganizationController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@organizationAccessPolicy.canRead(#id)")
     public OrganizationResponseDTO get(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @PostMapping
-    public OrganizationResponseDTO create(@RequestBody @Valid OrganizationCreateRequestDTO dto) {
-        return service.create(dto);
+    @PreAuthorize("@organizationAccessPolicy.canCreate()")
+    public OrganizationResponseDTO create(@RequestBody OrganizationCreateRequestDTO req) {
+        return service.create(req);
     }
 
     @PatchMapping("/{id}")
-    public OrganizationResponseDTO patch(@PathVariable Long id,
-                                         @RequestBody @Valid OrganizationUpdateRequestDTO dto) {
-        return service.update(id, dto);
+    @PreAuthorize("@organizationAccessPolicy.canUpdate(#id)")
+    public OrganizationResponseDTO update(@PathVariable Long id,
+                                          @RequestBody OrganizationUpdateRequestDTO req) {
+        return service.update(id, req);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@organizationAccessPolicy.canDelete(#id)")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

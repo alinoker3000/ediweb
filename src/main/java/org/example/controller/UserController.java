@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.user.UserCreateRequestDTO;
 import org.example.dto.user.UserResponseDTO;
 import org.example.dto.user.UserUpdateRequestDTO;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.example.service.UserService;
 
@@ -23,24 +24,26 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@userAccessPolicy.canRead(#id)")
     public UserResponseDTO get(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @PostMapping
-    public UserResponseDTO create(@RequestBody @Valid UserCreateRequestDTO req) {
+    @PreAuthorize("@userAccessPolicy.canCreate(#req.organizationId)")
+    public UserResponseDTO create(@RequestBody UserCreateRequestDTO req) {
         return service.create(req);
     }
 
     @PatchMapping("/{id}")
-    public UserResponseDTO update(
-            @PathVariable Long id,
-            @Valid @RequestBody UserUpdateRequestDTO dto
-    ) {
-        return service.update(id, dto);
+    @PreAuthorize("@userAccessPolicy.canUpdate(#id)")
+    public UserResponseDTO update(@PathVariable Long id,
+                                  @RequestBody UserUpdateRequestDTO req) {
+        return service.update(id, req);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@userAccessPolicy.canDelete(#id)")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

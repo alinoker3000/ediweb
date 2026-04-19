@@ -6,6 +6,7 @@ import org.example.dto.document.DocumentCreateRequestDTO;
 import org.example.dto.document.DocumentResponseDTO;
 import org.example.dto.document.DocumentUpdateRequestDTO;
 import org.example.service.DocumentService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,24 +24,26 @@ public class DocumentController {
     }
 
     @GetMapping("/{id}")
-    public DocumentResponseDTO getById(@PathVariable Long id) {
+    @PreAuthorize("@documentAccessPolicy.canRead(#id)")
+    public DocumentResponseDTO get(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @PostMapping
-    public DocumentResponseDTO create(@RequestBody @Valid DocumentCreateRequestDTO req) {
+    @PreAuthorize("@documentAccessPolicy.canCreate(#req.senderId, #req.receiverId)")
+    public DocumentResponseDTO create(@RequestBody DocumentCreateRequestDTO req) {
         return service.create(req);
     }
 
     @PatchMapping("/{id}")
-    public DocumentResponseDTO update(
-            @PathVariable Long id,
-            @Valid @RequestBody DocumentUpdateRequestDTO dto
-    ) {
-        return service.update(id, dto);
+    @PreAuthorize("@documentAccessPolicy.canUpdate(#id)")
+    public DocumentResponseDTO update(@PathVariable Long id,
+                                      @RequestBody DocumentUpdateRequestDTO req) {
+        return service.update(id, req);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@documentAccessPolicy.canDelete(#id)")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

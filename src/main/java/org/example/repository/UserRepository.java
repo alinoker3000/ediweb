@@ -2,10 +2,21 @@ package org.example.repository;
 
 import org.example.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByLogin(String login);
+
+    List<User> findByOrganizationId(Long organizationId);
+
+    @Query("""
+        select u from User u
+        where :isAdmin = true
+           or u.organization.id = :orgId
+        """)
+    List<User> findAccessibleUsers(boolean isAdmin, Long orgId);
 }

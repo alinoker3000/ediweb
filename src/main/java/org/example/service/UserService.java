@@ -12,6 +12,7 @@ import org.example.repository.UserRepository;
 import org.example.security.CurrentUserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,49 +26,30 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final CurrentUserService currentUser;
 
-    private boolean sameOrg(User user) {
-        return user.getOrganization().getId().equals(currentUser.companyId());
-    }
-
+    @Transactional(readOnly = true)
     public List<UserResponseDTO> findAll() {
 
-        if (currentUser.isAdmin()) {
-            return userRepo.findAll()
-                    .stream()
-                    .map(userMapper::toResponse)
-                    .toList();
-        }
-
-        return userRepo.findAll()
-                .stream()
-                .filter(this::sameOrg)
+        return userRepo.findAccessibleUsers(
+                        currentUser.isAdmin(),
+                        currentUser.companyId()
+                ).stream()
                 .map(userMapper::toResponse)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public UserResponseDTO findById(Long id) {
 
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (currentUser.isAdmin()) {
-            return userMapper.toResponse(user);
-        }
-
-        if (!user.getOrganization().getId().equals(currentUser.companyId())) {
-            throw new RuntimeException("Access denied");
-        }
-
         return userMapper.toResponse(user);
     }
 
+    @Transactional
     public UserResponseDTO create(UserCreateRequestDTO req) {
 
-        if (!currentUser.isAdmin()) {
-            throw new RuntimeException("Only admin can create users");
-        }
-
-        Organization org = orgRepo.findById(currentUser.companyId())
+        Organization org = orgRepo.findById(req.getOrganizationId())
                 .orElseThrow(() -> new RuntimeException("Organization not found"));
 
         User user = userMapper.toEntity(req);
@@ -78,18 +60,19 @@ public class UserService {
         return userMapper.toResponse(userRepo.save(user));
     }
 
+    @Transactional
     public UserResponseDTO update(Long id, UserUpdateRequestDTO req) {
 
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!currentUser.isAdmin()) {
-            if (!user.getId().equals(currentUser.userId())) {
-                throw new RuntimeException("Access denied");
-            }
-        }
-
         userMapper.update(req, user);
+
+        if (req.getOrganizationId() != null) {
+            Organization org = orgRepo.findById(req.getOrganizationId())
+                    .orElseThrow(() -> new RuntimeException("Organization not found"));
+            user.setOrganization(org);
+        }
 
         if (req.getPassword() != null && !req.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(req.getPassword()));
@@ -98,18 +81,11 @@ public class UserService {
         return userMapper.toResponse(userRepo.save(user));
     }
 
+    @Transactional
     public void delete(Long id) {
-
-        if (!currentUser.isAdmin()) {
-            throw new RuntimeException("Only admin can delete users");
-        }
 
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!user.getOrganization().getId().equals(currentUser.companyId())) {
-            throw new RuntimeException("Access denied");
-        }
 
         userRepo.delete(user);
     }

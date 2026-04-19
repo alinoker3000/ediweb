@@ -9,6 +9,7 @@ import org.example.mapper.OrganizationMapper;
 import org.example.repository.OrganizationRepository;
 import org.example.security.CurrentUserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,68 +21,49 @@ public class OrganizationService {
     private final OrganizationMapper mapper;
     private final CurrentUserService currentUser;
 
+    @Transactional(readOnly = true)
     public List<OrganizationResponseDTO> findAll() {
 
-        if (currentUser.isAdmin()) {
-            return repo.findAll()
-                    .stream()
-                    .map(mapper::toResponse)
-                    .toList();
-        }
-
-        return repo.findById(currentUser.companyId())
+        return repo.findAccessibleOrganizations(
+                        currentUser.companyId(),
+                        currentUser.isAdmin())
                 .stream()
                 .map(mapper::toResponse)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public OrganizationResponseDTO findById(Long id) {
 
         Organization org = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Organization not found"));
 
-        if (!currentUser.isAdmin()) {
-            if (!org.getId().equals(currentUser.companyId())) {
-                throw new RuntimeException("Access denied");
-            }
-        }
-
         return mapper.toResponse(org);
     }
 
+    @Transactional
     public OrganizationResponseDTO create(OrganizationCreateRequestDTO req) {
-
-        if (!currentUser.isAdmin()) {
-            throw new RuntimeException("Only admin can create organizations");
-        }
-
         Organization org = mapper.toEntity(req);
         return mapper.toResponse(repo.save(org));
     }
 
+    @Transactional
     public OrganizationResponseDTO update(Long id, OrganizationUpdateRequestDTO req) {
 
         Organization org = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Organization not found"));
-
-        if (!currentUser.isAdmin()) {
-
-            if (!org.getId().equals(currentUser.companyId())) {
-                throw new RuntimeException("Access denied");
-            }
-        }
 
         mapper.update(req, org);
 
         return mapper.toResponse(repo.save(org));
     }
 
+    @Transactional
     public void delete(Long id) {
 
-        if (!currentUser.isAdmin()) {
-            throw new RuntimeException("Only admin can delete organizations");
-        }
+        Organization org = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Organization not found"));
 
-        repo.deleteById(id);
+        repo.delete(org);
     }
 }
