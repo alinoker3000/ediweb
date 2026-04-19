@@ -11,6 +11,7 @@ import org.example.mapper.DocumentHeaderMapper;
 import org.example.mapper.DocumentMapper;
 import org.example.repository.DocumentRepository;
 import org.example.repository.OrganizationRepository;
+import org.example.security.AuthUser;
 import org.example.security.CurrentUserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +30,17 @@ public class DocumentService {
 
     @Transactional(readOnly = true)
     public List<DocumentResponseDTO> findAll() {
-        return documentRepo
-                .findAccessibleDocument(
-                        currentUser.companyId(),
-                        currentUser.isAdmin())
+
+        AuthUser user = currentUser.get();
+
+        if (user.isAdmin()) {
+            return documentRepo.findAll()
+                    .stream()
+                    .map(mapper::toResponse)
+                    .toList();
+        }
+
+        return documentRepo.findByOrganizationAccess(user.getOrganizationId())
                 .stream()
                 .map(mapper::toResponse)
                 .toList();

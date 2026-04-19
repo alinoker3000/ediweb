@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         AuthUser authUser = new AuthUser(
                 ((Number) claims.get("userId")).longValue(),
-                ((Number) claims.get("companyId")).longValue(),
+                ((Number) claims.get("organizationId")).longValue(),
                 Boolean.TRUE.equals(claims.get("admin"))
         );
 

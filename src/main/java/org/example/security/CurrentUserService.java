@@ -16,16 +16,4 @@ public class CurrentUserService {
 
         return user;
     }
-
-    public Long userId() {
-        return get().getUserId();
-    }
-
-    public Long companyId() {
-        return get().getOrganizationId();
-    }
-
-    public boolean isAdmin() {
-        return get().isAdmin();
-    }
 }

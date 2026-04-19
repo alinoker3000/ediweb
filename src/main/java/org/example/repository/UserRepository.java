@@ -13,10 +13,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByOrganizationId(Long organizationId);
 
-    @Query("""
-        select u from User u
-        where :isAdmin = true
-           or u.organization.id = :orgId
-        """)
-    List<User> findAccessibleUsers(boolean isAdmin, Long orgId);
 }

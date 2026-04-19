@@ -10,26 +10,31 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DocumentAccessPolicy {
 
-    private final DocumentRepository repo;
     private final CurrentUserService currentUser;
+    private final DocumentRepository repo;
 
-    private boolean belongs(Document doc) {
-        Long orgId = currentUser.companyId();
-        return doc.getHeader().getSender().getId().equals(orgId)
-                || doc.getHeader().getReceiver().getId().equals(orgId);
+    private boolean isSameOrg(Long orgId) {
+        return currentUser.get().getOrganizationId().equals(orgId);
     }
 
     public boolean canRead(Long id) {
-        if (currentUser.isAdmin()) return true;
 
-        Document doc = repo.findById(id).orElseThrow();
-        return belongs(doc);
+        if (currentUser.get().isAdmin()) {
+            return true;
+        }
+
+        return repo.findByIdAndOrganizationAccess(id, currentUser.get().getOrganizationId())
+                .isPresent();
     }
 
     public boolean canCreate(Long senderId, Long receiverId) {
-        if (currentUser.isAdmin()) return true;
 
-        Long myOrg = currentUser.companyId();
+        if (currentUser.get().isAdmin()) {
+            return true;
+        }
+
+        Long myOrg = currentUser.get().getOrganizationId();
+
         return senderId.equals(myOrg) || receiverId.equals(myOrg);
     }
 

@@ -7,6 +7,7 @@ import org.example.dto.organization.OrganizationResponseDTO;
 import org.example.entity.Organization;
 import org.example.mapper.OrganizationMapper;
 import org.example.repository.OrganizationRepository;
+import org.example.security.AuthUser;
 import org.example.security.CurrentUserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +25,16 @@ public class OrganizationService {
     @Transactional(readOnly = true)
     public List<OrganizationResponseDTO> findAll() {
 
-        return repo.findAccessibleOrganizations(
-                        currentUser.companyId(),
-                        currentUser.isAdmin())
+        AuthUser user = currentUser.get();
+
+        if (user.isAdmin()) {
+            return repo.findAll()
+                    .stream()
+                    .map(mapper::toResponse)
+                    .toList();
+        }
+
+        return repo.findById(user.getOrganizationId())
                 .stream()
                 .map(mapper::toResponse)
                 .toList();

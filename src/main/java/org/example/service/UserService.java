@@ -9,6 +9,7 @@ import org.example.entity.User;
 import org.example.mapper.UserMapper;
 import org.example.repository.OrganizationRepository;
 import org.example.repository.UserRepository;
+import org.example.security.AuthUser;
 import org.example.security.CurrentUserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,10 +30,17 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserResponseDTO> findAll() {
 
-        return userRepo.findAccessibleUsers(
-                        currentUser.isAdmin(),
-                        currentUser.companyId()
-                ).stream()
+        AuthUser user = currentUser.get();
+
+        if (user.isAdmin()) {
+            return userRepo.findAll()
+                    .stream()
+                    .map(userMapper::toResponse)
+                    .toList();
+        }
+
+        return userRepo.findByOrganizationId(user.getOrganizationId())
+                .stream()
                 .map(userMapper::toResponse)
                 .toList();
     }

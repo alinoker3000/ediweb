@@ -9,28 +9,22 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrganizationAccessPolicy {
 
-    private final OrganizationRepository repo;
     private final CurrentUserService currentUser;
 
     public boolean canRead(Long id) {
-        if (currentUser.isAdmin()) return true;
-
-        return id.equals(currentUser.companyId());
+        return currentUser.get().isAdmin()
+                || id.equals(currentUser.get().getOrganizationId());
     }
 
     public boolean canUpdate(Long id) {
-        if (currentUser.isAdmin()) return true;
-
-        return id.equals(currentUser.companyId());
+        return canRead(id);
     }
 
     public boolean canCreate() {
-        return currentUser.isAdmin();
+        return currentUser.get().isAdmin();
     }
 
-    public boolean canDelete() {
-        return currentUser.isAdmin();
+    public boolean canDelete(Long id) {
+        return currentUser.get().isAdmin();
     }
-
-
 }
