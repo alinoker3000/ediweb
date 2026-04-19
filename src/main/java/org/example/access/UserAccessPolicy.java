@@ -26,7 +26,7 @@ public class UserAccessPolicy {
         return id.equals(currentUser.get().getUserId());
     }
 
-    public boolean canCreate() {
+    public boolean canCreate(Long id) {
         return currentUser.get().isAdmin();
     }
 

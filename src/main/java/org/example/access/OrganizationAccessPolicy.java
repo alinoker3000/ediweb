@@ -20,7 +20,7 @@ public class OrganizationAccessPolicy {
         return canRead(id);
     }
 
-    public boolean canCreate() {
+    public boolean canCreate(Long id) {
         return currentUser.get().isAdmin();
     }
 
