@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="alina" id="1776760072916-1">
+        <createTable tableName="organizations">
+            <column autoIncrement="true" name="id" startWith="4" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="organizations_pkey"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="gln" type="VARCHAR(13)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="alina" id="1776760072916-2">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" startWith="6" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="admin" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="login" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="organization_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="alina" id="1776760072916-3">
+        <createTable tableName="document_headers">
+            <column autoIncrement="true" name="id" startWith="3" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="document_headers_pkey"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="format" type="VARCHAR(255)"/>
+            <column name="number" type="VARCHAR(255)"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="receiver_id" type="BIGINT"/>
+            <column name="sender_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="alina" id="1776760072916-4">
+        <createTable tableName="documents">
+            <column autoIncrement="true" name="id" startWith="3" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="documents_pkey"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="data" type="OID"/>
+            <column name="header_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="alina" id="1776760072916-5">
+        <addUniqueConstraint columnNames="gln" constraintName="uk_n5hjkexkxw2y0miekneklta69" tableName="organizations"/>
+    </changeSet>
+
+    <changeSet author="alina" id="1776760072916-6">
+        <addUniqueConstraint columnNames="login" constraintName="uk_ow0gan20590jrb00upg3va2fn" tableName="users"/>
+    </changeSet>
+
+    <changeSet author="alina" id="1776760072916-7">
+        <addUniqueConstraint columnNames="header_id" constraintName="uk_2vk7j7n6rawipq7j0xhxgye9h" tableName="documents"/>
+    </changeSet>
+
+    <changeSet author="alina" id="1776760072916-8">
+        <addForeignKeyConstraint baseColumnNames="receiver_id" baseTableName="document_headers" constraintName="fk34j5hetpfkojb0k9m0kfxg4rx" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="organizations" validate="true"/>
+    </changeSet>
+
+    <changeSet author="alina" id="1776760072916-9">
+        <addForeignKeyConstraint baseColumnNames="sender_id" baseTableName="document_headers" constraintName="fkc7kwgcmv5pp2uwhqmek72osop" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="organizations" validate="true"/>
+    </changeSet>
+
+    <changeSet author="alina" id="1776760072916-10">
+        <addForeignKeyConstraint baseColumnNames="header_id" baseTableName="documents" constraintName="fkcyfudbdbycvce8t0aom9d9tyh" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="document_headers" validate="true"/>
+    </changeSet>
+
+    <changeSet author="alina" id="1776760072916-11">
+        <addForeignKeyConstraint baseColumnNames="organization_id" baseTableName="users" constraintName="fkqpugllwvyv37klq7ft9m8aqxk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="organizations" validate="true"/>
+    </changeSet>
+
+</databaseChangeLog>
