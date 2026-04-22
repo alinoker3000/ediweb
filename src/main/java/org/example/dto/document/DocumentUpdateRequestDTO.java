@@ -1,5 +1,6 @@
 package org.example.dto.document;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.constraints.Size;
 
 import lombok.Getter;
@@ -15,12 +16,9 @@ public class DocumentUpdateRequestDTO {
     @Size(min = 1, message = "Type cannot be empty")
     private String type;
 
-    @Size(min = 1, message = "Format cannot be empty")
-    private String format;
-
     private Long senderId;
     private Long receiverId;
 
     @Size(min = 1, message = "Data cannot be empty")
-    private String data;
+    private JsonNode payload;
 }

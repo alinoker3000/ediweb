@@ -2,6 +2,7 @@ package org.example.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.enums.DocumentFormat;
 
 @Entity
 @Table(name = "document_headers")
@@ -16,9 +17,9 @@ public class DocumentHeader  extends BaseEntity {
 
     private String number;
 
-    private String type;
-
-    private String format;
+    @ManyToOne
+    @JoinColumn(name = "type_id")
+    private DocumentType type;
 
     @OneToOne(mappedBy = "header")
     private Document document;

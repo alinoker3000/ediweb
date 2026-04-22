@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="002_insert_data_fixed" author="alina">
+        <insert tableName="document_types">
+            <column name="code" value="ORDER"/>
+            <column name="format" value="XML"/>
+            <column name="xsd_schema" valueClobFile="../../../xsd/order.xsd" type="text"/>
+        </insert>
+
+        <insert tableName="document_types">
+            <column name="code" value="INVOICE"/>
+            <column name="format" value="XML"/>
+            <column name="xsd_schema" valueClobFile="../../../xsd/invoice.xsd" type="text"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

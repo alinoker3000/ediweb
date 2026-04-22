@@ -1,11 +1,10 @@
 package org.example.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.document.DocumentCreateRequestDTO;
 import org.example.dto.document.DocumentResponseDTO;
 import org.example.dto.document.DocumentUpdateRequestDTO;
-import org.example.service.DocumentService;
+import org.example.service.document.DocumentService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

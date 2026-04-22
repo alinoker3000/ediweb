@@ -1,5 +1,6 @@
 package org.example.dto.document;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,9 +18,6 @@ public class DocumentCreateRequestDTO {
     @NotBlank
     private String type;
 
-    @NotBlank
-    private String format;
-
     @NotNull
     private Long senderId;
 
@@ -27,5 +25,5 @@ public class DocumentCreateRequestDTO {
     private Long receiverId;
 
     @NotBlank
-    private String data;
+    private JsonNode payload;
 }

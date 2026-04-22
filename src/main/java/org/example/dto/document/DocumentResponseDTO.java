@@ -10,6 +10,7 @@ public class DocumentResponseDTO {
     private Long id;
 
     private String number;
+
     private String type;
     private String format;
 
