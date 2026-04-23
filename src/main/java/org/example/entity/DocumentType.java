@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.enums.DocumentFormat;
+import org.example.util.DocumentFormat;
 
 @Entity
 @Table(name = "document_types")

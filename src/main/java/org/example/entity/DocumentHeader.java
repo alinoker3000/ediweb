@@ -2,7 +2,6 @@ package org.example.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.enums.DocumentFormat;
 
 @Entity
 @Table(name = "document_headers")

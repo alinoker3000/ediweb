@@ -1,4 +1,4 @@
-package org.example.service.document.processor;
+package org.example.processor.document.xml;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,8 +8,9 @@ import org.example.dto.document.invoice.InvoicePayloadDTO;
 import org.example.dto.document.order.OrderDTO;
 import org.example.dto.document.order.OrderPayloadDTO;
 import org.example.entity.DocumentType;
-import org.example.enums.DocumentFormat;
-import org.example.service.XmlValidationService;
+import org.example.util.DocumentFormat;
+import org.example.processor.document.DocumentProcessor;
+import org.example.service.document.validation.XmlValidationService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

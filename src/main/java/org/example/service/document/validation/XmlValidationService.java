@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.service.document.validation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

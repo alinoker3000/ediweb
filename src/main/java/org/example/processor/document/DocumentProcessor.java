@@ -1,9 +1,8 @@
-package org.example.service.document.processor;
+package org.example.processor.document;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import jakarta.validation.constraints.NotBlank;
 import org.example.entity.DocumentType;
-import org.example.enums.DocumentFormat;
+import org.example.util.DocumentFormat;
 
 public interface DocumentProcessor {
 

@@ -1,6 +1,6 @@
-package org.example.service.document.processor;
+package org.example.processor.document;
 
-import org.example.enums.DocumentFormat;
+import org.example.util.DocumentFormat;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

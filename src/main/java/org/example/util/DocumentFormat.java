@@ -1,4 +1,4 @@
-package org.example.enums;
+package org.example.util;
 
 public enum DocumentFormat {
     XML

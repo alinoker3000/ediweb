@@ -14,8 +14,8 @@ import org.example.repository.DocumentTypeRepository;
 import org.example.repository.OrganizationRepository;
 import org.example.security.AuthUser;
 import org.example.security.CurrentUserService;
-import org.example.service.document.processor.DocumentProcessor;
-import org.example.service.document.processor.DocumentProcessorRegistry;
+import org.example.processor.document.DocumentProcessor;
+import org.example.processor.document.DocumentProcessorRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
