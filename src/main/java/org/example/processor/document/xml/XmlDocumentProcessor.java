@@ -110,6 +110,10 @@ public class XmlDocumentProcessor implements DocumentProcessor {
 
     public String generate(DocumentType type, JsonNode payload) {
 
+        if (payload.isTextual()) {
+            return payload.asText();
+        }
+
         if ("ORDER".equals(type.getCode())) {
             OrderPayloadDTO dto = objectMapper.convertValue(payload, OrderPayloadDTO.class);
             return generateOrderXml(dto);
